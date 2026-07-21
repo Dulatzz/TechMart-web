@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 const Ico = ({ children }) => (
   <span className="ico">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -5,7 +7,48 @@ const Ico = ({ children }) => (
   </span>
 )
 
+const EMPTY = { name: '', phone: '', msg: '' }
+
+function validate(values) {
+  const errors = {}
+  if (!values.name.trim()) {
+    errors.name = 'Укажите, как к вам обращаться'
+  }
+  const phoneDigits = values.phone.replace(/\D/g, '')
+  if (!values.phone.trim()) {
+    errors.phone = 'Укажите телефон для связи'
+  } else if (phoneDigits.length < 10) {
+    errors.phone = 'Похоже, номер введён не полностью'
+  }
+  if (values.msg.trim().length < 10) {
+    errors.msg = 'Опишите задачу чуть подробнее (от 10 символов)'
+  }
+  return errors
+}
+
 export default function Contact() {
+  const [values, setValues] = useState(EMPTY)
+  const [errors, setErrors] = useState({})
+  const [sent, setSent] = useState(false)
+
+  const handleChange = (e) => {
+    const { id, value } = e.target
+    setValues((v) => ({ ...v, [id]: value }))
+    if (errors[id]) setErrors((prev) => ({ ...prev, [id]: undefined }))
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const found = validate(values)
+    if (Object.keys(found).length > 0) {
+      setErrors(found)
+      return
+    }
+    setErrors({})
+    setSent(true)
+    setValues(EMPTY)
+  }
+
   return (
     <section className="section" id="contact">
       <div className="container contact">
@@ -33,23 +76,57 @@ export default function Contact() {
           </div>
         </div>
 
-        <form className="form" onSubmit={(e) => e.preventDefault()}>
-          <div className="field">
-            <label htmlFor="name">Имя</label>
-            <input id="name" type="text" placeholder="Как к вам обращаться" />
+        {sent ? (
+          <div className="form form--success">
+            <div className="form__check">✓</div>
+            <h3>Заявка отправлена</h3>
+            <p>Спасибо! Инженер свяжется с вами в ближайшее время.</p>
+            <button className="btn btn--ghost" type="button" onClick={() => setSent(false)}>
+              Отправить ещё одну
+            </button>
           </div>
-          <div className="field">
-            <label htmlFor="phone">Телефон</label>
-            <input id="phone" type="tel" placeholder="+7 (___) ___-__-__" />
-          </div>
-          <div className="field">
-            <label htmlFor="msg">Задача</label>
-            <textarea id="msg" placeholder="Коротко опишите объект и что нужно" />
-          </div>
-          <button className="btn btn--primary" style={{ width: '100%' }} type="submit">
-            Отправить заявку
-          </button>
-        </form>
+        ) : (
+          <form className="form" onSubmit={handleSubmit} noValidate>
+            <div className="field">
+              <label htmlFor="name">Имя</label>
+              <input
+                id="name"
+                type="text"
+                placeholder="Как к вам обращаться"
+                value={values.name}
+                onChange={handleChange}
+                aria-invalid={!!errors.name}
+              />
+              {errors.name && <span className="field__error">{errors.name}</span>}
+            </div>
+            <div className="field">
+              <label htmlFor="phone">Телефон</label>
+              <input
+                id="phone"
+                type="tel"
+                placeholder="+7 (___) ___-__-__"
+                value={values.phone}
+                onChange={handleChange}
+                aria-invalid={!!errors.phone}
+              />
+              {errors.phone && <span className="field__error">{errors.phone}</span>}
+            </div>
+            <div className="field">
+              <label htmlFor="msg">Задача</label>
+              <textarea
+                id="msg"
+                placeholder="Коротко опишите объект и что нужно"
+                value={values.msg}
+                onChange={handleChange}
+                aria-invalid={!!errors.msg}
+              />
+              {errors.msg && <span className="field__error">{errors.msg}</span>}
+            </div>
+            <button className="btn btn--primary" style={{ width: '100%' }} type="submit">
+              Отправить заявку
+            </button>
+          </form>
+        )}
       </div>
     </section>
   )
