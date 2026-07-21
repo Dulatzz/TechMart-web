@@ -1,5 +1,4 @@
 :root {
-  /* exact tokens from techmart.kz */
   --black: #030303;
   --green-dark: #36A852;
   --green: #7FD688;
@@ -145,6 +144,17 @@ img { max-width: 100%; display: block; }
 .nav a:hover { color: var(--text); }
 .header__cta { margin-left: 8px; height: 46px; }
 .burger { display: none; height: 46px; }
+.nav-mobile {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 24px 22px;
+  border-top: 1px solid var(--line);
+  background: #fff;
+}
+.nav-mobile a { padding: 10px 4px; font-weight: 600; color: var(--text); }
+.nav-mobile a:last-child { margin-top: 8px; color: var(--black); }
+@media (max-width: 720px) { .nav-mobile { display: flex; } }
 
 /* Hero — dark image with left-to-right gradient, like the original */
 .hero {
@@ -393,6 +403,24 @@ img { max-width: 100%; display: block; }
 }
 .form .field textarea { min-height: 118px; resize: vertical; }
 .form .field input:focus, .form .field textarea:focus { outline: none; border-color: var(--green-dark); }
+
+/* Валидация формы */
+.field__error { font-size: 13px; color: #d64545; font-weight: 500; }
+.field input[aria-invalid="true"],
+.field textarea[aria-invalid="true"] { border-color: #d64545; }
+
+/* Экран успеха после отправки */
+.form--success {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 12px;
+  justify-content: center;
+}
+.form--success .form__check {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--green); color: var(--black);
+  display: grid; place-items: center; font-size: 24px; font-weight: 800;
+}
+.form--success h3 { margin: 4px 0 0; font-size: 24px; font-weight: 800; letter-spacing: -0.025em; }
+.form--success p { margin: 0 0 6px; color: var(--muted); }
 
 /* Footer */
 .footer { background: var(--black); color: #C9D3CE; padding: 68px 0 34px; }
